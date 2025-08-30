@@ -14,7 +14,6 @@
   "framer-motion": "10.18.0"
   },
   "devDependencies": {
-  "@next/swc-win32-x64-msvc": "^15.5.2",
   "autoprefixer": "^10.4.20",
   "postcss": "^8.4.41",
   "tailwindcss": "^3.4.10",
