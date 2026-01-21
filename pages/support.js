@@ -41,6 +41,42 @@ export default function Support(){
           <h3 className="font-semibold mb-2 text-slate-800 dark:text-slate-100">Contact / Outreach</h3>
           <a target="_blank" href="https://chuffed.org/project/136236-help-me-and-my-family-get-out-of-gaza" className="text-xs text-slate-600 dark:text-slate-400 dark:hover:text-slate-100 underline"><b>https://chuffed.org/project/136236-help-me-and-my-family-get-out-of-gaza</b></a>
         </div>
+        <div className="prose-card">
+          <h3 className="font-semibold mb-2 text-slate-800 dark:text-slate-100">Send a Message</h3>
+          <form id="contact" className="space-y-3" onSubmit={async (e) => {
+            e.preventDefault()
+            const f = e.currentTarget
+            const data = { name: f.name.value, email: f.email.value, message: f.message.value }
+            const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+            if (res.ok) {
+              f.reset()
+              const evt = await res.json()
+              const notice = (evt && evt.ok) ? 'Message sent — thank you' : 'Message sent'
+              window.dispatchEvent(new CustomEvent('toast', { detail: notice }))
+            } else {
+              const body = await res.json().catch(() => null)
+              const err = body && body.errors ? Object.values(body.errors).join(', ') : 'Failed to send message'
+              window.dispatchEvent(new CustomEvent('toast', { detail: err }))
+            }
+          }}>
+            <div>
+              <label htmlFor="name" className="text-xs block mb-1">Name</label>
+              <input id="name" name="name" className="border rounded px-3 py-2 w-full text-sm" required />
+            </div>
+            <div>
+              <label htmlFor="email" className="text-xs block mb-1">Email</label>
+              <input id="email" name="email" type="email" className="border rounded px-3 py-2 w-full text-sm" required />
+            </div>
+            <div>
+              <label htmlFor="message" className="text-xs block mb-1">Message</label>
+              <textarea id="message" name="message" rows="4" className="border rounded px-3 py-2 w-full text-sm" required />
+            </div>
+            <div className="flex gap-2">
+              <button type="submit" className="btn">Send Message</button>
+              <a target="_blank" href="https://chuffed.org/project/136236-help-me-and-my-family-get-out-of-gaza" className="btn-outline">Donate</a>
+            </div>
+          </form>
+        </div>
       </aside>
     </div>
   )

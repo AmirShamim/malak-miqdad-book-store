@@ -2,12 +2,47 @@ import products from '../../lib/products'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
+import { useToast } from '../../components/ToastContext'
+import { track } from '../../lib/track'
+import { useCart } from '../../components/CartContext'
+import ConfirmModal from '../../components/ConfirmModal' 
 
 export default function Product(){
   const router = useRouter()
   const { id } = router.query
   const product = products.find(p => p.id === id)
-  if(!product) return <div className="prose-card"><p>Product not found</p></div>
+  const showToast = useToast()
+  const { addItem, removeItem, items } = useCart()
+  const [confirmModal, setConfirmModal] = useState({ open: false, product: null })
+  const [animating, setAnimating] = useState(false)
+
+  function handleAddProduct(){
+    addItem(product)
+    showToast('Added to cart', { actionLabel: 'Undo', action: () => { removeItem(product.id); track(`/cart/undo/${product.id}`) } })
+    setAnimating(true)
+    setTimeout(() => setAnimating(false), 380)
+    track(`/cart/add/${product.id}`)
+  }
+
+  function requestRemoveProduct(){
+    setConfirmModal({ open: true, product })
+  }
+
+  function handleRemoveConfirmed(){
+    const removed = items.find(i => i.id === product.id)
+    const qty = removed?.qty || 1
+    removeItem(product.id)
+    setConfirmModal({ open: false, product: null })
+    showToast('Removed from cart', { actionLabel: 'Undo', action: () => { addItem(product, qty); track(`/cart/undo/${product.id}`) } })
+    track(`/cart/remove/${product.id}`)
+  }
+
+  function cancelRemove(){
+    setConfirmModal({ open: false, product: null })
+  }
+
+  if(!product) return <div className="prose-card"><p>Product not found</p></div> 
 
   return (
     <div className="grid gap-10 lg:grid-cols-3">
@@ -22,8 +57,15 @@ export default function Product(){
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed mb-6 text-sm md:text-base">{product.description}</p>
             <div className="flex items-center flex-wrap gap-3 mb-8">
               <span className="text-lg font-semibold text-slate-800 dark:text-slate-200">{product.currency} {product.price}</span>
-              <a className="btn" href={product.gumroadUrl} target="_blank" rel="noreferrer">Buy on Gumroad</a>
+              <a className="btn" href={product.gumroadUrl} target="_blank" rel="noreferrer" onClick={() => { track(`/buy/${product.id}`); showToast('Opening Gumroad…') }}>Buy on Gumroad</a>
+              {(items || []).some(i => i.id === product.id) ? (
+                <button className={`btn-added btn px-3 py-2 ${animating ? 'btn-animate' : ''}`} onClick={() => requestRemoveProduct()} aria-pressed="true">Added</button>
+              ) : (
+                <button className="btn-outline" onClick={handleAddProduct}>Add to Cart</button>
+              )}
+              <button className="btn-outline" onClick={() => { const url = `${window.location.origin}/product/${product.id}`; navigator.clipboard.writeText(url).then(() => { showToast('Link copied'); track(`/share/${product.id}`) }) }}>Share</button>
               <Link href="/support" className="btn-outline">More Ways to Support</Link>
+              <ConfirmModal open={confirmModal.open} title="Remove item" message={confirmModal.product ? `Remove "${confirmModal.product.title}" from your cart?` : ''} confirmLabel="Remove" cancelLabel="Cancel" onConfirm={handleRemoveConfirmed} onCancel={cancelRemove} /> 
             </div>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-5">
