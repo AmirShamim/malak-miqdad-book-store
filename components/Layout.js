@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCart } from './CartContext'
 import CartModal from './CartModal'
+import { useSession, signOut } from 'next-auth/react'
 
 function CartButton(){
   const { items, toggleOpen } = useCart()
@@ -13,6 +14,20 @@ function CartButton(){
       {items.length > 0 && <span className="text-xs bg-brand-600 text-white rounded-full px-2 py-0.5">{items.reduce((s,i) => s + i.qty, 0)}</span>}
     </button>
   )
+}
+
+function AuthButton() {
+  const { data: session, status } = useSession()
+  if (status === 'loading') return null
+  if (session) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-slate-600 dark:text-slate-400 hidden sm:inline">{session.user.name || session.user.email}</span>
+        <button onClick={() => signOut()} className="btn-outline px-3 py-1.5 text-xs">Sign Out</button>
+      </div>
+    )
+  }
+  return <Link href="/auth/signin" className="btn-outline px-3 py-1.5 text-xs">Sign In</Link>
 }
 
 export default function Layout({ children }) {
@@ -53,9 +68,11 @@ export default function Layout({ children }) {
           </Link>
           <nav className="flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-400">
             <Link href="/about" className="hover:text-slate-900 dark:hover:text-slate-200">About</Link>
+            <Link href="/portfolio" className="hover:text-slate-900 dark:hover:text-slate-200">Portfolio</Link>
             <Link href="/story" className="hover:text-slate-900 dark:hover:text-slate-200">Story</Link>
             <Link href="/support" className="hover:text-slate-900 dark:hover:text-slate-200">Support</Link>
             <CartButton />
+            <AuthButton />
             <button onClick={toggleTheme} aria-label="Toggle theme" className="btn-outline px-3 py-1.5 text-xs">
               {mounted ? (theme === 'dark' ? 'Light' : 'Dark') : '…'}
             </button>

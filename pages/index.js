@@ -53,9 +53,9 @@ export default function Home(){
     <>
       <section className="gradient-hero rounded-3xl px-6 py-20 mb-14 relative overflow-hidden ring-1 ring-slate-200">
         <div className="max-w-3xl">
-          <span className="badge mb-4">Cooking • Resilience • Heritage</span>
+          <span className="badge mb-4">Cooking • Resilience • Heritage • Design</span>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-6">Preserving Heritage Through Food Under Unimaginable Circumstances</h1>
-          <p className="text-lg md:text-xl leading-relaxed text-slate-700 dark:text-slate-200 mb-8">Two recipe volumes created while studying online in Gaza—capturing resourceful, nourishing meals that kept hope alive. Your purchase directly supports continuing education and daily needs.</p>
+          <p className="text-lg md:text-xl leading-relaxed text-slate-700 dark:text-slate-200 mb-8">Recipe volumes and digital design products created while studying online in Gaza—capturing resourceful, nourishing meals and creative design work that kept hope alive. Your purchase directly supports continuing education and daily needs.</p>
           <div className="flex flex-wrap gap-4">
             <Link href="#books" className="btn">Browse the Books</Link>
             <Link href="/story" className="btn-outline">Read the Story</Link>
@@ -65,12 +65,12 @@ export default function Home(){
 
       <section id="books" className="site-grid">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Books</h2>
-          <p className="text-slate-600 dark:text-slate-200 mb-4 max-w-2xl">Carefully written guides with ingredient substitutions, low-fuel methods, and culturally rooted flavors. Choose a volume to learn more.</p>
+          <h2 className="text-2xl font-semibold mb-4">Products</h2>
+          <p className="text-slate-600 dark:text-slate-200 mb-4 max-w-2xl">Carefully written guides, design templates, and digital products. Choose an item to learn more.</p>
 
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <label htmlFor="q" className="sr-only">Search books</label>
-            <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search books or categories" className="border rounded px-3 py-2 text-sm w-full md:w-64" />
+            <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products or categories" className="border rounded px-3 py-2 text-sm w-full md:w-64" />
             {q && (
               <button className="btn-outline" onClick={() => setQ('')}>Clear</button>
             )}
@@ -87,6 +87,9 @@ export default function Home(){
                     )}
                   </div>
                   <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-2 group-hover:text-brand-400 dark:group-hover:text-brand-300 transition-colors">{p.title}</h3>
+                  {p.type && (
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-brand-100 dark:bg-brand-900/40 text-[10px] font-semibold tracking-wide text-brand-700 dark:text-brand-300 mb-2 uppercase">{p.type === 'digital' ? 'Digital Product' : 'Book'}</span>
+                  )}
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 line-clamp-3">{p.description}</p>
                   <div className="flex flex-wrap gap-1 mb-4">
                     {p.categories?.slice(0,3).map(c => (
