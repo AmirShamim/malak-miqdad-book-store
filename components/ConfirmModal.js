@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
 
 export default function ConfirmModal({ open, title = 'Confirm', message, confirmLabel = 'Remove', cancelLabel = 'Cancel', onConfirm, onCancel }){
+  const trapRef = useFocusTrap(open)
   useEffect(() => {
     function onKey(e){
       if(!open) return
@@ -16,7 +18,7 @@ export default function ConfirmModal({ open, title = 'Confirm', message, confirm
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
-      <div role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="bg-white dark:bg-slate-900 rounded-lg p-6 z-[99] w-full max-w-md shadow-lg">
+      <div ref={trapRef} role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="bg-white dark:bg-slate-900 rounded-lg p-6 z-[99] w-full max-w-md shadow-lg">
         <h3 id="confirm-title" className="text-lg font-semibold mb-2 text-slate-900 dark:text-slate-100">{title}</h3>
         {message && <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">{message}</p>}
         <div className="flex items-center justify-end gap-3">

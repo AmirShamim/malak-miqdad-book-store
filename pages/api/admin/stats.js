@@ -12,6 +12,7 @@ export default async function handler(req, res) {
   }
 
   const supabase = getServiceSupabase()
+  if (!supabase) return res.status(503).json({ error: 'Service unavailable' })
 
   try {
     // Total revenue (paid orders)

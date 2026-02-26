@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 const fade = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } }
 
@@ -13,15 +13,15 @@ export default function About() {
       </Head>
 
       <div className="max-w-3xl mx-auto">
-        <motion.div {...fade} transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}>
+        <m.div {...fade} transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}>
           <div className="ornament mb-6 max-w-[240px]"><span>Author &middot; Student &middot; Designer</span></div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold mb-4 tracking-tight text-[#2d2a26] dark:text-[#e8e4df]">
             Meet Malak
           </h1>
           <p className="text-[#8a8580] dark:text-[#9b9590] mb-12 text-sm">From Gaza — building a future through creativity and learning</p>
-        </motion.div>
+        </m.div>
 
-        <motion.div {...fade} transition={{ delay: 0.15, duration: 0.6, ease: [0.4, 0, 0.2, 1] }} className="space-y-8">
+        <m.div {...fade} transition={{ delay: 0.15, duration: 0.6, ease: [0.4, 0, 0.2, 1] }} className="space-y-8">
           <div className="prose-card p-7 sm:p-8">
             <h2 className="text-xl font-display font-semibold mb-4 text-[#2d2a26] dark:text-[#e8e4df]">Who I Am</h2>
             <p className="text-[#5a5550] dark:text-[#a5a09a] leading-relaxed mb-4">
@@ -61,7 +61,7 @@ export default function About() {
               <Link href="/support" className="btn-outline">Ways to Support</Link>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </>
   )

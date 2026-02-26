@@ -1,0 +1,78 @@
+/* ─── Hero — Editorial Gradient ─────────────────── */
+.gradient-hero {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(166,139,101,0.08) 0, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 20%, rgba(227,139,39,0.06) 0, transparent 60%),
+    linear-gradient(170deg, #faf9f7 0%, #f5f2ed 100%);
+  border: 1px solid rgba(166,139,101,0.1);
+}
+:global(.dark) .gradient-hero {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(166,139,101,0.06) 0, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 20%, rgba(227,139,39,0.04) 0, transparent 60%),
+    linear-gradient(170deg, #1a1816 0%, #121110 100%);
+  border: 1px solid rgba(166,139,101,0.08);
+}
+
+/* ─── Product Grid ───────────────────────────────── */
+.product-grid {
+  display: grid;
+  gap: 2rem;
+}
+@media (min-width: 640px) {
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 0;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s ease, border-color 0.3s;
+  cursor: pointer;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 40px -12px rgb(0 0 0 / 0.08),
+    0 4px 12px -2px rgb(0 0 0 / 0.04);
+  border-color: rgba(166,139,101,0.2);
+}
+:global(.dark) .product-card {
+  background: #1a1816;
+  border-color: rgba(255,255,255,0.06);
+}
+:global(.dark) .product-card:hover {
+  border-color: rgba(166,139,101,0.2);
+  box-shadow: 0 16px 48px -12px rgb(0 0 0 / 0.4);
+}
+.product-card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+@media (min-width: 768px) { .product-card-body { padding: 1.75rem; } }
+
+/* ─── Badge — Refined ────────────────────────────── */
+.badge {
+  display: inline-block;
+  background: rgba(166,139,101,0.1);
+  color: #8d7352;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-inter), sans-serif;
+}
+:global(.dark) .badge {
+  background: rgba(166,139,101,0.12);
+  color: #bfa786;
+}

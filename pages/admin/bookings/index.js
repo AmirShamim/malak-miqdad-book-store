@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../components/AuthContext'
-import { formatPrice } from '../../../lib/products'
+import { formatPrice } from '../../../lib/format'
 import { useToast } from '../../../components/ToastContext'
 
 const statusLabels = {

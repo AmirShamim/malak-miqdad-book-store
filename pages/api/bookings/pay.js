@@ -8,6 +8,7 @@ export default async function handler(req, res) {
 
   try {
     const userSupabase = getUserSupabase(req)
+    if (!userSupabase) return res.status(503).json({ error: 'Service unavailable' })
     const { data: { user }, error: authError } = await userSupabase.auth.getUser()
 
     if (authError || !user) {
@@ -20,6 +21,7 @@ export default async function handler(req, res) {
     }
 
     const serviceSupabase = getServiceSupabase()
+    if (!serviceSupabase) return res.status(503).json({ error: 'Service unavailable' })
 
     // Fetch booking and verify ownership
     const { data: booking, error: bookingError } = await serviceSupabase

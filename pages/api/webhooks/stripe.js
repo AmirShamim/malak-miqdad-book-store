@@ -36,6 +36,7 @@ export default async function handler(req, res) {
   }
 
   const supabase = getServiceSupabase()
+  if (!supabase) return res.status(503).json({ error: 'Service unavailable' })
 
   switch (event.type) {
     case 'checkout.session.completed': {

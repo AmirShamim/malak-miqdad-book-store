@@ -6,6 +6,7 @@ export default async function handler(req, res) {
   if (!authorized) return res.status(403).json({ error })
 
   const supabase = getServiceSupabase()
+  if (!supabase) return res.status(503).json({ error: 'Service unavailable' })
 
   if (req.method === 'GET') {
     const { data, error: fetchError } = await supabase

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../components/AuthContext'
-import { formatPrice } from '../../../lib/products'
+import { formatPrice } from '../../../lib/format'
 import { useToast } from '../../../components/ToastContext'
 
 const statusLabels = {
@@ -168,7 +168,7 @@ export default function BookingDetail() {
   return (
     <>
       <Head>
-        <title>{pkg?.title || 'Booking'} — Malak Miqdad</title>
+        <title>{`${pkg?.title || 'Booking'} — Malak Miqdad`}</title>
       </Head>
 
       <div className="max-w-3xl mx-auto">

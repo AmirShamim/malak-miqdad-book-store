@@ -1,54 +1,20 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { useCart } from './CartContext'
 import { useAuth } from './AuthContext'
+import { Sun, Moon, Menu, X, ShoppingBag } from './Icons'
 
 const CartModal = dynamic(() => import('./CartModal'), { ssr: false })
-
-/* ── SVG Icons ──────────────────────────────────── */
-function SunIcon({ className = 'w-4 h-4' }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-    </svg>
-  )
-}
-function MoonIcon({ className = 'w-4 h-4' }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-    </svg>
-  )
-}
-function MenuIcon({ className = 'w-5 h-5' }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5M3.75 15.75h16.5" />
-    </svg>
-  )
-}
-function XIcon({ className = 'w-5 h-5' }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  )
-}
-function ShoppingBagIcon({ className = 'w-5 h-5' }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-    </svg>
-  )
-}
 
 /* ── Nav Links ──────────────────────────────────── */
 const NAV_LINKS = [
   { href: '/about', label: 'About' },
   { href: '/story', label: 'Story' },
+  { href: '/portfolio', label: 'Portfolio' },
   { href: '/services', label: 'Services' },
   { href: '/support', label: 'Support' },
 ]
@@ -63,16 +29,16 @@ function CartButton() {
       aria-label={`Open cart${count > 0 ? `, ${count} items` : ''}`}
       className="nav-icon-btn group"
     >
-      <ShoppingBagIcon className="w-[18px] h-[18px] group-hover:scale-110 transition-transform" />
+      <ShoppingBag className="w-[18px] h-[18px] group-hover:scale-110 transition-transform" />
       {count > 0 && (
-        <motion.span
+        <m.span
           key={count}
           initial={{ scale: 0.5 }}
           animate={{ scale: 1 }}
           className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold bg-brand-700 text-white rounded-full px-1 ring-2 ring-white dark:ring-[#121110]"
         >
           {count}
-        </motion.span>
+        </m.span>
       )}
     </button>
   )
@@ -117,7 +83,7 @@ function UserMenu() {
         aria-haspopup="true"
       >
         {profile?.avatar_url ? (
-          <img src={profile.avatar_url} alt="" className="w-8 h-8 rounded-full ring-2 ring-white dark:ring-[#1a1816]" />
+          <Image src={profile.avatar_url} alt="" width={32} height={32} className="rounded-full ring-2 ring-white dark:ring-[#1a1816]" />
         ) : (
           <span className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-400 to-brand-700 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white dark:ring-[#1a1816]">{initials}</span>
         )}
@@ -125,7 +91,7 @@ function UserMenu() {
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
@@ -170,7 +136,7 @@ function UserMenu() {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
               Sign Out
             </button>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>
@@ -219,9 +185,9 @@ function ThemeToggle({ theme, mounted, onClick }) {
       className="nav-icon-btn group"
     >
       {mounted ? (
-        <motion.span key={theme} initial={{ rotate: -30, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.25 }}>
-          {theme === 'dark' ? <SunIcon className="w-[17px] h-[17px]" /> : <MoonIcon className="w-[17px] h-[17px]" />}
-        </motion.span>
+        <m.span key={theme} initial={{ rotate: -30, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.25 }}>
+          {theme === 'dark' ? <Sun className="w-[17px] h-[17px]" /> : <Moon className="w-[17px] h-[17px]" />}
+        </m.span>
       ) : (
         <div className="w-[17px] h-[17px]" />
       )}
@@ -328,9 +294,9 @@ export default function Layout({ children }) {
                 aria-expanded={mobileMenuOpen}
               >
                 <AnimatePresence mode="wait" initial={false}>
-                  <motion.span key={mobileMenuOpen ? 'x' : 'm'} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                    {mobileMenuOpen ? <XIcon /> : <MenuIcon />}
-                  </motion.span>
+                  <m.span key={mobileMenuOpen ? 'x' : 'm'} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
+                    {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                  </m.span>
                 </AnimatePresence>
               </button>
             </div>
@@ -340,7 +306,7 @@ export default function Layout({ children }) {
         {/* Mobile nav panel — floating glass dropdown */}
         <AnimatePresence>
           {mobileMenuOpen && (
-            <motion.nav
+            <m.nav
               initial={{ opacity: 0, y: -8, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
@@ -360,7 +326,7 @@ export default function Layout({ children }) {
                   <UserMenu />
                 </div>
               </div>
-            </motion.nav>
+            </m.nav>
           )}
         </AnimatePresence>
       </header>
@@ -388,7 +354,7 @@ export default function Layout({ children }) {
             <ul className="space-y-3 text-sm">
               <li><Link href="/" className="footer-link">Digital Products</Link></li>
               <li><Link href="/services" className="footer-link">Design Services</Link></li>
-              <li><Link href="/services/portfolio" className="footer-link">Portfolio</Link></li>
+              <li><Link href="/portfolio" className="footer-link">Portfolio</Link></li>
             </ul>
           </div>
           <div>

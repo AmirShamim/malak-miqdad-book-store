@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
@@ -6,7 +6,7 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // Fetch profile from profiles table (with timeout)
   async function fetchProfile(userId) {
@@ -66,7 +66,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   // Auth methods
-  async function signUp({ email, password, fullName }) {
+  const signUp = useCallback(async ({ email, password, fullName }) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -75,17 +75,17 @@ export function AuthProvider({ children }) {
       },
     })
     return { data, error }
-  }
+  }, [])
 
-  async function signIn({ email, password }) {
+  const signIn = useCallback(async ({ email, password }) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
     return { data, error }
-  }
+  }, [])
 
-  async function signInWithGoogle() {
+  const signInWithGoogle = useCallback(async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -93,18 +93,18 @@ export function AuthProvider({ children }) {
       },
     })
     return { data, error }
-  }
+  }, [])
 
-  async function signOut() {
+  const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut()
     if (!error) {
       setUser(null)
       setProfile(null)
     }
     return { error }
-  }
+  }, [])
 
-  async function updateProfile(updates) {
+  const updateProfile = useCallback(async (updates) => {
     if (!user) return { error: { message: 'Not authenticated' } }
     const { data, error } = await supabase
       .from('profiles')
@@ -115,19 +115,32 @@ export function AuthProvider({ children }) {
 
     if (data) setProfile(data)
     return { data, error }
-  }
+  }, [user])
 
-  const value = {
+  const isAdmin = profile?.role === 'admin'
+
+  /** Return the current access token without consumers needing to import supabase */
+  const getAccessToken = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      return session?.access_token ?? null
+    } catch {
+      return null
+    }
+  }, [])
+
+  const value = useMemo(() => ({
     user,
     profile,
     loading,
-    isAdmin: profile?.role === 'admin',
+    isAdmin,
+    getAccessToken,
     signUp,
     signIn,
     signInWithGoogle,
     signOut,
     updateProfile,
-  }
+  }), [user, profile, loading, isAdmin, getAccessToken, signUp, signIn, signInWithGoogle, signOut, updateProfile])
 
   return (
     <AuthContext.Provider value={value}>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Head from 'next/head'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useAuth } from '../../components/AuthContext'
 
 export default function SignIn() {
@@ -52,7 +52,7 @@ export default function SignIn() {
         <meta name="description" content="Sign in to your Malak Miqdad account to access purchases and services." />
       </Head>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-md mx-auto">
+      <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-md mx-auto">
         <div className="prose-card">
           <h1 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">Sign In</h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
@@ -131,7 +131,7 @@ export default function SignIn() {
             </Link>
           </p>
         </div>
-      </motion.div>
+      </m.div>
     </>
   )
 }

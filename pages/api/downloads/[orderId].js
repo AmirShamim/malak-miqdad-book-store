@@ -15,6 +15,7 @@ export default async function handler(req, res) {
 
   try {
     const supabase = getServiceSupabase()
+    if (!supabase) return res.status(503).json({ error: 'Service unavailable' })
 
     // Verify the user from the token
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)

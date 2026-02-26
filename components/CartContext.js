@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
 
 const CartContext = createContext()
 
@@ -21,7 +21,7 @@ export function CartProvider({ children }) {
     } catch (e) {}
   }, [items])
 
-  function addItem(item, qty = 1) {
+  const addItem = useCallback((item, qty = 1) => {
     setItems(current => {
       const found = current.find(i => i.id === item.id)
       if (found) {
@@ -29,23 +29,27 @@ export function CartProvider({ children }) {
       }
       return [...current, { ...item, qty }]
     })
-  }
+  }, [])
 
-  function removeItem(id) {
+  const removeItem = useCallback((id) => {
     setItems(current => current.filter(i => i.id !== id))
-  }
+  }, [])
 
-  function clearCart() {
+  const clearCart = useCallback(() => {
     setItems([])
-  }
+  }, [])
 
-  function toggleOpen(next) {
+  const toggleOpen = useCallback((next) => {
     if (typeof next === 'boolean') setOpen(next)
     else setOpen(v => !v)
-  }
+  }, [])
+
+  const value = useMemo(() => ({
+    items, addItem, removeItem, clearCart, open, toggleOpen
+  }), [items, addItem, removeItem, clearCart, open, toggleOpen])
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, clearCart, open, toggleOpen }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   )

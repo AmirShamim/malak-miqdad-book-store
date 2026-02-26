@@ -6,7 +6,7 @@ import { getServiceSupabase } from '../../../lib/supabase-server'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../components/AuthContext'
 import { useToast } from '../../../components/ToastContext'
-import { formatPrice } from '../../../lib/products'
+import { formatPrice } from '../../../lib/format'
 
 function withTimeout(promise, ms = 4000) {
   return Promise.race([
@@ -20,8 +20,13 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { notFound: true }
+  }
+
   try {
     const sb = getServiceSupabase()
+    if (!sb) return { notFound: true }
     const { data, error } = await withTimeout(
       sb
         .from('service_packages')
@@ -113,7 +118,7 @@ export default function BookService({ pkg }) {
   return (
     <>
       <Head>
-        <title>Book {pkg.title} — Malak Miqdad</title>
+        <title>{`Book ${pkg.title} — Malak Miqdad`}</title>
         <meta name="description" content={`Book ${pkg.title} design service. ${pkg.description}`} />
       </Head>
 

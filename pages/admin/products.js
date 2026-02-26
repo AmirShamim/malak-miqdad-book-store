@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../components/AuthContext'
 import { useToast } from '../../components/ToastContext'
-import { formatPrice } from '../../lib/products'
+import { formatPrice } from '../../lib/format'
 
 export default function AdminProducts() {
   const { user, isAdmin, loading: authLoading } = useAuth()
@@ -148,7 +149,7 @@ export default function AdminProducts() {
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className="w-10 h-10 rounded-lg shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-800">
                       {p.cover_url ? (
-                        <img src={p.cover_url} alt="" className="w-full h-full object-cover" />
+                        <Image src={p.cover_url} alt="" width={40} height={40} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full" style={{ backgroundColor: p.accent_color || '#3b82f6' }} />
                       )}

@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { getServiceSupabase } from '../../lib/supabase-server'
-import { formatPrice } from '../../lib/products'
+import { formatPrice } from '../../lib/format'
 
 const fallbackPackages = [
   {
@@ -61,8 +61,14 @@ function withTimeout(promise, ms = 4000) {
 export async function getStaticProps() {
   let packages = fallbackPackages
 
+  // Skip Supabase entirely if env vars aren't configured
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { props: { packages }, revalidate: 60 }
+  }
+
   try {
     const supabase = getServiceSupabase()
+    if (!supabase) return { props: { packages }, revalidate: 60 }
     const { data, error } = await withTimeout(
       supabase
         .from('service_packages')
@@ -93,7 +99,7 @@ export default function Services({ packages }) {
 
       <div className="max-w-5xl mx-auto">
         {/* Hero */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
@@ -107,7 +113,7 @@ export default function Services({ packages }) {
             Need a stunning logo or brand identity? I offer professional graphic design services
             tailored to your brand. Choose a package below or get in touch for custom work.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Packages Grid */}
         <div className="grid md:grid-cols-2 gap-8 sm:gap-10 mb-24 sm:mb-32">
@@ -115,7 +121,7 @@ export default function Services({ packages }) {
             const features = Array.isArray(pkg.features) ? pkg.features : []
 
             return (
-              <motion.div
+              <m.div
                 key={pkg.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -163,14 +169,14 @@ export default function Services({ packages }) {
                 >
                   Book This Package
                 </Link>
-              </motion.div>
+              </m.div>
             )
           })}
         </div>
 
         {/* Bottom CTAs */}
         <div className="grid sm:grid-cols-2 gap-8 sm:gap-10">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -185,9 +191,9 @@ export default function Services({ packages }) {
             <Link href="/support" className="btn-outline">
               Contact Me
             </Link>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -199,10 +205,10 @@ export default function Services({ packages }) {
             <p className="text-sm text-[#8a8580] dark:text-[#9b9590] mb-6 max-w-xs leading-relaxed">
               Check out some of my recent design projects.
             </p>
-            <Link href="/services/portfolio" className="btn-outline">
+            <Link href="/portfolio" className="btn-outline">
               View Portfolio
             </Link>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </>

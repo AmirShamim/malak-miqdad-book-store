@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../components/AuthContext'
-import { formatPrice } from '../../../lib/products'
+import { formatPrice } from '../../../lib/format'
 import { useToast } from '../../../components/ToastContext'
 
 const statusLabels = {
@@ -137,7 +137,7 @@ export default function AdminBookingDetail() {
 
   return (
     <>
-      <Head><title>Booking: {pkg?.title} — Admin</title></Head>
+      <Head><title>{`Booking: ${pkg?.title} — Admin`}</title></Head>
       <div className="max-w-4xl mx-auto">
         <Link href="/admin/bookings" className="text-sm text-brand-600 hover:text-brand-700 mb-4 inline-block">
           ← Back to Bookings

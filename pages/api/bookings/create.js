@@ -9,6 +9,7 @@ export default async function handler(req, res) {
   try {
     // Get authenticated user
     const userSupabase = getUserSupabase(req)
+    if (!userSupabase) return res.status(503).json({ error: 'Service unavailable' })
     const { data: { user }, error: authError } = await userSupabase.auth.getUser()
 
     if (authError || !user) {
@@ -23,6 +24,7 @@ export default async function handler(req, res) {
 
     // Fetch the package from DB to get accurate pricing
     const serviceSupabase = getServiceSupabase()
+    if (!serviceSupabase) return res.status(503).json({ error: 'Service unavailable' })
     const { data: pkg, error: pkgError } = await serviceSupabase
       .from('service_packages')
       .select('*')

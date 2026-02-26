@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { supabase } from '../../../lib/supabase'
 import { useAuth } from '../../../components/AuthContext'
-import { formatPrice } from '../../../lib/products'
+import { formatPrice } from '../../../lib/format'
 
 const statusLabels = {
   pending: 'Pending Review',

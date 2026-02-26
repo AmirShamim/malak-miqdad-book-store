@@ -1,16 +1,16 @@
-import { getProducts, getProduct, formatPrice } from '../../lib/products'
+import { getProducts, getProduct } from '../../lib/products'
+import { formatPrice } from '../../lib/format'
 import Link from 'next/link'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useToast } from '../../components/ToastContext'
 import { track } from '../../lib/track'
 import { useCart } from '../../components/CartContext'
-import { useAuth } from '../../components/AuthContext'
 import ConfirmModal from '../../components/ConfirmModal'
-import { supabase } from '../../lib/supabase'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
+import { useCheckout } from '../../hooks/useCheckout'
+import { useCartActions } from '../../hooks/useCartActions'
 
 export async function getStaticPaths() {
   const products = await getProducts()
@@ -29,55 +29,13 @@ export async function getStaticProps({ params }) {
 export default function Product({ product }) {
   const router = useRouter()
   const showToast = useToast()
-  const { addItem, removeItem, items } = useCart()
-  const { user } = useAuth()
-  const [confirmModal, setConfirmModal] = useState({ open: false, product: null })
-  const [animating, setAnimating] = useState(false)
-  const [buying, setBuying] = useState(false)
+  const { items } = useCart()
+  const { buyProduct, buyingId } = useCheckout()
+  const { animatingId, handleAdd, requestRemove, handleRemoveConfirmed, cancelRemove, confirmModal } = useCartActions()
 
   if (!product) return <div className="prose-card"><p>Product not found</p></div>
 
-  async function handleBuy() {
-    if (!user) {
-      router.push(`/auth/signin?returnTo=${encodeURIComponent(`/product/${product.id}`)}`)
-      return
-    }
-    setBuying(true)
-    track(`/buy/${product.id}`)
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch('/api/checkout/create-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify({ productId: product.id, userId: user.id }),
-      })
-      const data = await res.json()
-      if (data.url) { window.location.href = data.url }
-      else { showToast(data.error || 'Failed to start checkout') }
-    } catch { showToast('Checkout failed') }
-    setBuying(false)
-  }
-
-  function handleAddProduct() {
-    addItem(product)
-    showToast('Added to cart', { actionLabel: 'Undo', action: () => { removeItem(product.id); track(`/cart/undo/${product.id}`) } })
-    setAnimating(true)
-    setTimeout(() => setAnimating(false), 380)
-    track(`/cart/add/${product.id}`)
-  }
-
-  function requestRemoveProduct() { setConfirmModal({ open: true, product }) }
-
-  function handleRemoveConfirmed() {
-    const removed = items.find(i => i.id === product.id)
-    const qty = removed?.qty || 1
-    removeItem(product.id)
-    setConfirmModal({ open: false, product: null })
-    showToast('Removed from cart', { actionLabel: 'Undo', action: () => { addItem(product, qty); track(`/cart/undo/${product.id}`) } })
-    track(`/cart/remove/${product.id}`)
-  }
-
-  function cancelRemove() { setConfirmModal({ open: false, product: null }) }
+  const buying = buyingId === product.id
 
   const coverUrl = product.cover_url || product.cover
   const accent = product.accent_color || product.accentColor || '#a68b65'
@@ -86,18 +44,39 @@ export default function Product({ product }) {
   return (
     <>
       <Head>
-        <title>{product.title} — Malak Miqdad</title>
+        <title>{`${product.title} — Malak Miqdad`}</title>
         <meta name="description" content={product.description?.substring(0, 160)} />
+        <link rel="canonical" href={`https://malakmiqdad.com/product/${product.id}`} />
         <meta property="og:title" content={product.title} />
         <meta property="og:description" content={product.description?.substring(0, 160)} />
         <meta property="og:type" content="product" />
+        <meta property="og:url" content={`https://malakmiqdad.com/product/${product.id}`} />
         {coverUrl && <meta property="og:image" content={coverUrl} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={product.title} />
+        <meta name="twitter:description" content={product.description?.substring(0, 160)} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.title,
+            description: product.description,
+            image: coverUrl || undefined,
+            offers: {
+              '@type': 'Offer',
+              price: product.price,
+              priceCurrency: product.currency || 'USD',
+              availability: 'https://schema.org/InStock',
+            },
+          }) }}
+        />
       </Head>
 
       <div className="grid gap-10 lg:grid-cols-3">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-10">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
@@ -106,7 +85,7 @@ export default function Product({ product }) {
             {/* Cover */}
             <div className="relative h-60 sm:h-80 w-full" style={{ backgroundColor: accent }}>
               {coverUrl && (
-                <Image src={coverUrl} alt={`${product.title} cover`} layout="fill" objectFit="cover" className="mix-blend-multiply dark:mix-blend-normal" />
+                <Image src={coverUrl} alt={`${product.title} cover`} fill sizes="(max-width: 1024px) 100vw, 66vw" style={{ objectFit: 'cover' }} className="mix-blend-multiply dark:mix-blend-normal" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
             </div>
@@ -120,15 +99,15 @@ export default function Product({ product }) {
               <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-10 pb-8 border-b border-brand-100 dark:border-[#2a2725]">
                 <span className="text-3xl font-display font-bold text-[#2d2a26] dark:text-[#e8e4df]">{formatPrice(product.price, product.currency)}</span>
                 <div className="flex flex-wrap gap-3">
-                  <button onClick={handleBuy} disabled={buying} className="btn">
+                  <button onClick={() => buyProduct(product.id, `/product/${product.id}`)} disabled={buying} className="btn">
                     {buying ? 'Processing...' : 'Buy Now'}
                   </button>
                   {inCart ? (
-                    <button className={`btn-added ${animating ? 'btn-animate' : ''}`} onClick={requestRemoveProduct} aria-pressed="true">
+                    <button className={`btn-added ${animatingId === product.id ? 'btn-animate' : ''}`} onClick={() => requestRemove(product)} aria-pressed="true">
                       &#10003; In Cart
                     </button>
                   ) : (
-                    <button className="btn-outline" onClick={handleAddProduct}>Add to Cart</button>
+                    <button className="btn-outline" onClick={() => handleAdd(product)}>Add to Cart</button>
                   )}
                   <button
                     className="btn-ghost"
@@ -165,10 +144,10 @@ export default function Product({ product }) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Why These Books Exist */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -178,10 +157,10 @@ export default function Product({ product }) {
             <p className="text-sm text-[#6b6560] dark:text-[#9b9590] leading-relaxed">
               Created during online studies in Gaza, these recipes were written under restriction — carefully documenting ways to cook with limited supplies while honoring cultural memory. Each purchase supports continuity of education and essentials.
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Sample Recipe */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -197,12 +176,12 @@ export default function Product({ product }) {
                 <li>Serve with preserved herb oil or simple yogurt dressing.</li>
               </ol>
             </div>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Sidebar */}
         <aside className="space-y-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -214,9 +193,9 @@ export default function Product({ product }) {
               <Link href="/story" className="btn-outline text-center text-sm">Read the Story</Link>
               <Link href="/support" className="btn-outline text-center text-sm">Support Options</Link>
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -225,9 +204,9 @@ export default function Product({ product }) {
             <h3 className="font-display font-semibold text-[#2d2a26] dark:text-[#e8e4df] mb-3">Need Design Work?</h3>
             <p className="text-sm text-[#8a8580] dark:text-[#9b9590] mb-5 leading-relaxed">Professional graphic design services — logos, brand identity, social media packs.</p>
             <Link href="/services" className="btn text-center w-full">View Services</Link>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -240,9 +219,9 @@ export default function Product({ product }) {
               <li className="flex items-center gap-2.5"><span className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0"></span> Accessible ingredients</li>
               <li className="flex items-center gap-2.5"><span className="w-1.5 h-1.5 rounded-full bg-brand-400 flex-shrink-0"></span> Direct support impact</li>
             </ul>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
@@ -250,7 +229,7 @@ export default function Product({ product }) {
           >
             <h3 className="font-display font-semibold text-[#2d2a26] dark:text-[#e8e4df] mb-4">Nutrition Focus</h3>
             <p className="text-sm text-[#8a8580] dark:text-[#9b9590] leading-relaxed">Emphasis on fiber, sustaining energy, and adaptable spice balances while minimizing fuel usage.</p>
-          </motion.div>
+          </m.div>
         </aside>
       </div>
 

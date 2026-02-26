@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 
 const ToastContext = createContext()
 
@@ -24,10 +24,10 @@ export function ToastProvider({ children }) {
     return () => window.removeEventListener('toast', onToast)
   }, [])
 
-  const showToast = (message, opts = {}) => {
+  const showToast = useCallback((message, opts = {}) => {
     if (typeof message === 'object' && message !== null) setToast(message)
     else setToast({ message, ...opts })
-  } 
+  }, [])
 
   return (
     <ToastContext.Provider value={{ showToast }}>

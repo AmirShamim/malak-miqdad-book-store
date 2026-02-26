@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Head from 'next/head'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../components/AuthContext'
-import { formatPrice } from '../../lib/products'
+import { formatPrice } from '../../lib/format'
 
 export default function CheckoutSuccess() {
   const router = useRouter()
@@ -40,7 +40,7 @@ export default function CheckoutSuccess() {
         <meta name="description" content="Your purchase is complete. Thank you for your support!" />
       </Head>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="max-w-lg mx-auto text-center">
+      <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="max-w-lg mx-auto text-center">
         <div className="prose-card">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
             <svg className="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
@@ -85,7 +85,7 @@ export default function CheckoutSuccess() {
             </Link>
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </>
   )
 }

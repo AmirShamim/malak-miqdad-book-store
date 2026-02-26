@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Head from 'next/head'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useAuth } from '../../components/AuthContext'
 
 export default function SignUp() {
@@ -64,7 +64,7 @@ export default function SignUp() {
   if (success) {
     return (
       <div className="max-w-md mx-auto">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="prose-card text-center">
+        <m.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="prose-card text-center">
           <div className="text-4xl mb-4">✉️</div>
           <h1 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">Check Your Email</h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
@@ -73,7 +73,7 @@ export default function SignUp() {
           <Link href="/auth/signin" className="btn-outline">
             Back to Sign In
           </Link>
-        </motion.div>
+        </m.div>
       </div>
     )
   }
@@ -85,7 +85,7 @@ export default function SignUp() {
         <meta name="description" content="Create an account to purchase digital products and book design services." />
       </Head>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-md mx-auto">
+      <m.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-md mx-auto">
         <div className="prose-card">
           <h1 className="text-2xl font-bold mb-2 text-slate-900 dark:text-slate-100">Create Account</h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
@@ -191,7 +191,7 @@ export default function SignUp() {
             </Link>
           </p>
         </div>
-      </motion.div>
+      </m.div>
     </>
   )
 }
