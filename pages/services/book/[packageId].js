@@ -8,7 +8,7 @@ import { useAuth } from '../../../components/AuthContext'
 import { useToast } from '../../../components/ToastContext'
 import { formatPrice } from '../../../lib/format'
 
-function withTimeout(promise, ms = 4000) {
+function withTimeout(promise, ms = 1500) {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),

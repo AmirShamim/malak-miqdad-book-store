@@ -5,7 +5,7 @@ import { m } from 'framer-motion'
 import { getServiceSupabase } from '../lib/supabase-server'
 import b from '../styles/bento.module.css'
 
-function withTimeout(promise, ms = 4000) {
+function withTimeout(promise, ms = 1500) {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),

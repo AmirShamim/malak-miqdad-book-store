@@ -3,7 +3,6 @@ const path = require('path')
 
 const nextConfig = {
   reactStrictMode: true,
-  compress: true,
   outputFileTracingRoot: path.join(__dirname),
 
   // Security + caching headers
